@@ -22,5 +22,8 @@ prurge
 
 the javascript file can be existent, when the embedded javascript file isn't existent, the javascript file will be launched if existent and after that the e404.js, and finally then, the e404.ejs will be rendered
 
+middleware
+add any filename+".js" in /middleware, and it will act as middleware. export.use will be called with req, res and next, when export.path is existent, the middleware will be bound to that specific path. A example middleware is already existent
+
 # Note
 This is a leightweight version, used for SPAs (**S**ignle**P**age**A**pplication**s**). A more complex one will come in the future

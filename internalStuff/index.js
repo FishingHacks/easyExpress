@@ -1,19 +1,38 @@
 function testForEJS(path, req, res) {
-    console.log(path)
     const fs = require("fs");
     if(!fs.existsSync(path)) {
         require("../e404")(req, res);
-        res.render("../e404.ejs", {req, res});
+        return res.render("../e404.ejs", {req, res});
     }
     res.render("."+path, {req, res})
 }
 
 (async function() {
+    const {logError} = require("../config")
     const fs = require("fs");
     const express = require("express");
 
     const app = express();
     await require("../init")(app, require("../config"));
+
+    const middleWare = fs.readdirSync("./middleware")
+    console.log(middleWare)
+    middleWare.forEach(el=>{
+        if(el.endsWith(".js")) {
+            let m = require("../middleware/"+el);
+            if(m.path && m.user) {
+                app.use(m.path, m.use);
+            }
+            else if(m.use) {
+                app.use(m.use);
+            }
+        }
+    })
+
+    app.use((err, req, res, next) => {
+        if(logError) console.log(err);
+        next();
+    })
 
     app.get("*", (req, res) => {
         if(fs.existsSync("./routes" + req.url.split("?")[0] + (req.url.split("?")[0]=="/"?"":"/") + "get.js")) require("../routes" + req.url.split("?")[0] + (req.url.split("?")[0]=="/"?"":"/") + "get.js")(req, res);

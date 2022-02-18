@@ -3,4 +3,5 @@
  */
 export interface config {
     PORT: number,
+    logError: boolean,
 }
